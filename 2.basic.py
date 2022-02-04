@@ -65,5 +65,5 @@ for user in set(ratings.index):
     accuracy = RMSE(y_true, y_pred)
     rmse.append(accuracy)
 
-# 집단 추천방법은 99.6인 것을 볼 수 있다. (사실상 무쓸모)
+# 집단 추천방법은 0.996만큼 오차가 발생하는 것을 볼 수 있다.
 print(np.mean(rmse))
