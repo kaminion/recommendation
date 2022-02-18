@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 
 # 유저 데이터
 u_cols = ['user_id', 'age', 'sex', 'occupation', 'zip_code']
@@ -37,4 +38,25 @@ x_train = x[:split_index]
 x_test = x[split_index:]
 y_train = y[:split_index]
 y_test = y[split_index:]
-print(y_train, y_test)
+# print(y_train, y_test)
+
+
+# Objective Function
+# RMSE 정확도 계산
+def RMSE(y_true, y_pred):
+    return np.sqrt(np.mean((np.array(y_true) - np.array(y_pred)) ** 2))
+
+# 모델별 RMSE 계산 함수
+def score(model):
+    id_pairs = zip(x_test['user_id'], x_test['movie_id'])
+    y_pred = np.array([model(user, movie) for (user, movie) in id_pairs])
+    y_true = np.array(x_test['rating'])
+    
+    return RMSE(y_true, y_pred)
+
+# train 데이터로 Full Matrix 구하기
+# 유저id를 인덱스로, 유저가 영화에 부여한 평점 매트릭스로 피버팅함
+rating_matrix = x_train.pivot(index='user_id', columns='movie_id', values='rating')
+# print(rating_matrix)
+
+# 실제 모델
