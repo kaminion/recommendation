@@ -46,7 +46,7 @@ y_test = y[split_index:]
 def RMSE(y_true, y_pred):
     return np.sqrt(np.mean((np.array(y_true) - np.array(y_pred)) ** 2))
 
-# 모델별 RMSE 계산 함수
+# 모델별 RMSE 계산 함수(해당 모델의 결과값과 실제 값의 RMSE값 도출  )
 def score(model):
     id_pairs = zip(x_test['user_id'], x_test['movie_id'])
     y_pred = np.array([model(user, movie) for (user, movie) in id_pairs])
@@ -59,4 +59,18 @@ def score(model):
 rating_matrix = x_train.pivot(index='user_id', columns='movie_id', values='rating')
 # print(rating_matrix)
 
-# 실제 모델
+
+# 실제 모델, 전체 평균으로 예측치를 계산하는 기본 모델 (예측 모델)
+def best_seller(user_id, movie_id):
+    # train set에는 존재하지 않지만 test set에 존재하는 영화로 인해 발생하는 오류 방지 (try-except)
+    try:
+        rating = train_mean[movie_id]
+    except: 
+        rating = 3.0
+    return rating
+
+# 영화의 평점 평균 집계
+train_mean = x_train.groupby(['movie_id'])['rating'].mean()
+
+# 모델 실행, 결과적으로 RMSE값이 증가함. 자신의 테스트 값으로 test하지 않았으므로 오차율이 증가한 것임
+# print(score(best_seller))
