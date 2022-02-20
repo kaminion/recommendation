@@ -74,3 +74,30 @@ train_mean = x_train.groupby(['movie_id'])['rating'].mean()
 
 # 모델 실행, 결과적으로 RMSE값이 증가함. 자신의 테스트 값으로 test하지 않았으므로 오차율이 증가한 것임
 # print(score(best_seller))
+
+
+# 사용자 데이터와 Full Matrix merge
+merged_ratings = pd.merge(x_train, users)
+users = users.set_index('user_id')
+
+# gender별 평점평균 계산
+g_mean = merged_ratings[['movie_id', 'sex', 'rating']].groupby(['movie_id', 'sex'])['rating'].mean()
+# print(g_mean)
+
+
+## Gender 기준 추천 예측 모델
+def cf_gender(user_id, movie_id):
+
+    if movie_id in rating_matrix:
+        gender = users.loc[user_id]['sex']
+        # 내부에 젠더가 있는 경우 / 없는 경우로 나뉨 ( 평가한 사용자가 없는 경우 예측값 3.0 )
+        if gender in g_mean[movie_id]:
+            gender_rating = g_mean[movie_id][gender]
+        else :
+            gender_rating = 3.0
+    else:
+        gender_rating = 3.0
+    
+    return gender_rating
+
+print(score(cf_gender))
